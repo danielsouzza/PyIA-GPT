@@ -1,5 +1,6 @@
 class TokenOpenAI:
-    def getToken():
+    def getToken(self):
         return {
-            "key":"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"
+             "key": "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"
         }
+

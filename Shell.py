@@ -1,10 +1,17 @@
 import subprocess
-from getpass import getpass
-
 class Shell:
-    def execute(comando):
-        processo =\
-            subprocess.Popen(comando,shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        saida, erro = processo.communicate()
-        print(saida)
-        print(erro)
+    @staticmethod
+    def execute(scripts):
+        saida = []
+        erro = []
+        print(scripts)
+        for script in scripts:
+            processo =\
+                subprocess.Popen(script, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            saida.append(processo.communicate()[0])
+            erro.append(processo.communicate()[1])
+
+        return {
+            "success": saida,
+            "erro": erro
+        }
