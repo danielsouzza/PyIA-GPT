@@ -1,8 +1,6 @@
 # import openai
 # from Token import TokenOpenAI
-import gradio as gr
-from Shell import Shell
-from Gpt import GPT
+
 
 
 class App:
