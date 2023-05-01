@@ -17,7 +17,7 @@ class ChatVoz:
                 return text
             except sr.UnknownValueError or sr.RequestError :
                 return ""
-                
+
     def play_audio(self, text):
         try:
             tts = gTTS(text=text, lang='pt-br', slow=False)
