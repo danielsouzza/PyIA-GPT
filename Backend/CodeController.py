@@ -19,7 +19,13 @@ class CodeController:
         
         result = subprocess.run(code, shell=True, capture_output=True, text=True)
         
-        return result.stdout
+        return result
+    
+    def exec_justOneCode(self):
+        code = self.get_next_code()
+        if code:
+            return self.exec_code(code)
+        
     
     def get_next_code(self):
         try:
@@ -32,4 +38,5 @@ class CodeController:
         for code in self.iter_code:
             output.append(self.exec_code(code))
         return output
+    
     

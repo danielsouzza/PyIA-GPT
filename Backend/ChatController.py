@@ -30,7 +30,7 @@ Usuário:"""
         return platform.system()
     
     def extract_commands(self, content):
-        pattern = re.compile(r'[`]{1,3}\n?(.+?)\n?[`]{1,3}')
+        pattern = re.compile(r'(?:[`]{1,3}(?:\s+)?)(.*?)(?:(?:\s+)?[`]{1,3})')
         scripts = pattern.findall(content)
         self.code_controller.set_corrent_code(scripts)
         
@@ -42,8 +42,10 @@ Usuário:"""
         content = completion.choices[0].message.content
         self.extract_commands(content)
         self.update_messages(content)
-        return content
-        # self.callback.on_result(content, self.code_controller.corrent_codes)
+        self.callback.on_result(content, self.hasScript())
+
+    def hasScript(self):
+        return self.code_controller.corrent_codes != []
     
     def get_messages(self):
         return [(self.message_history[i]["content"], self.message_history[i+1]["content"])

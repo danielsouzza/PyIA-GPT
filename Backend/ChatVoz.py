@@ -16,7 +16,7 @@ class ChatVoz:
                 text = self.recognizer.recognize_google(audio, language='pt-BR')
                 return text
             except sr.UnknownValueError or sr.RequestError :
-                return ""
+                return "" 
 
     def play_audio(self, text):
         try:

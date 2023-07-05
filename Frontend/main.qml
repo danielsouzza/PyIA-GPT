@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Window
 import QtQuick.Controls
 import "chat"
+import "resource"
 
 Window {
     id: mainWindow
@@ -10,6 +11,8 @@ Window {
     visible: true
     color: "#ffffff"
     title: "PyIA"
+
+    // flags: Qt.Window | Qt.FramelessWindowHint
 
     Rectangle {
         id: bg
@@ -33,7 +36,7 @@ Window {
             Rectangle {
                 id: topBar
                 height: 60
-                color: "#e9e9e9"
+                color: "#fff"
                 radius: 10
                 anchors.left: parent.left
                 anchors.right: parent.right
@@ -73,11 +76,12 @@ Window {
                 Text {
                     id: profileNameLabel
                     x: 710
-                    text: qsTr("dummyNameText")
+                    text: qsTr("Bárbara")
                     anchors.right: profilePic.left
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
-                    font.pixelSize: 12
+                    font.pixelSize: 20
+                    font.weight: Font.Bold
                     horizontalAlignment: Text.AlignRight
                     verticalAlignment: Text.AlignVCenter
                     anchors.topMargin: 0
@@ -104,9 +108,8 @@ Window {
             Rectangle {
                 id: rectangle
                 color: "#c5ffffff"
-                radius: 10
-                border.color: "#e9e9e9"
-                border.width: 3
+                radius: 40
+                border.color: "#7E7E7E"
                 anchors.left: topBar.left
                 anchors.right: topBar.right
                 anchors.top: topBar.bottom
@@ -150,23 +153,26 @@ Window {
 
                     }
                     delegate: Item {
-                        x: 5
-                        width: 657
-                        height: 100
+                        width: 650
+                        height: if (hasScript){
+                            Math.max(50, messageText.height + 10 + 105)
+                        }else{
+                            Math.max(50, messageText.height + 10)
+                        }
                         anchors.right: isUserMessage ? parent.right : undefined
                         anchors.left: isUserMessage ? undefined : parent.left
 
                         Rectangle {
-                            width: 657
-                            height: heigt_box
+                            width: 650
                             anchors.top: parent.top
-                            color: "#e9e9e9"
-                            radius: 10
-
+                            anchors.bottom: parent.bottom
+                            border.color: "#7E7E7E"
+                            radius: 30
 
                             Image {
                                 id: image
-                                width: 49
+                                width: 40
+                                height: 40
                                 anchors.left: isUserMessage ? undefined : parent.left
                                 anchors.right: isUserMessage ? parent.right : undefined
                                 anchors.top: parent.top
@@ -191,9 +197,27 @@ Window {
                                 anchors.bottomMargin: 0
                                 anchors.leftMargin: 10
                                 anchors.topMargin: 0
+                               
+                            }
+                            RunBtn{
+                                id: btnRun
+                                anchors.topMargin:10
+                                visible: hasScript
+                                anchors.rightMargin: 5
+                                anchors.right: parent.right
+                                anchors.top: messageText.bottom
+                        
+                                onClicked: {
+                                    backend.executar()
+                                }
                             }
                         }
+                        
+                    }
 
+                    Component.onCompleted: {
+                        
+                        listView.positionViewAtIndex(listView.count - 1, ListView.End)
                     }
                 }
 
@@ -218,8 +242,9 @@ Window {
                 id: inputContainer
                 y: 384
                 height: 86
-                color: "#e9e9e9"
-                radius: 10
+                // color: "#e9e9e9"
+                border.color: "#7E7E7E"
+                radius: 50
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
@@ -227,52 +252,67 @@ Window {
                 anchors.leftMargin: 20
                 anchors.bottomMargin: 20
 
+
+
                 TextArea {
                     id: inputQuestionInput
                     anchors.left: parent.left
-                    anchors.right: sendButton.left
+                    anchors.right: btnSend.left
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
                     horizontalAlignment: Text.AlignJustify
+                    verticalAlignment: Text.AlignVCenter
                     wrapMode: Text.WordWrap
                     font.pointSize: 11
                     anchors.rightMargin: 5
                     anchors.bottomMargin: 15
                     anchors.topMargin: 15
                     anchors.leftMargin: 15
-                    placeholderText: qsTr("Qual a sua duvida?")
-
+                    color: "black"
+                    placeholderText: qsTr("Qual a sua dúvida?")
+                    implicitHeight: contentHeight 
+                    onTextChanged: {
+                        implicitHeight = contentHeight
+                    }
                 }
 
-                Button {
-                    id: sendButton
-                    x: -43
-                    y: 25
-                    width: 55
-                    text: qsTr("dummyButton")
-                    anchors.right: parent.right
+
+                CustomBtn{
+                    id: btnSend
                     anchors.top: inputQuestionInput.top
                     anchors.bottom: inputQuestionInput.bottom
+                    anchors.right: btnVoice.left
                     anchors.rightMargin: 15
-                    icon.color: "#00000000"
-                    display: AbstractButton.IconOnly
-                    icon.source: "images/sendButtonPic.png"
-                    anchors.topMargin: 0
-                    anchors.bottomMargin: 0
+                    btnIcon: "../assets/SendBtn.svg"
+                    
                     onClicked: {
                         myListModel.append({
                                                userPictureSource: "images/dummyProfile.png",
                                                messageString: inputQuestionInput.text,
                                                isUserMessage: true,
-                                               heigt_box: 100
+                                               hasScript: false
+                                              
+                                            
+                                            
                                            })
-                        backend.getInput(inputQuestionInput.text)
+                        backend.getUserInput(inputQuestionInput.text)
                         inputQuestionInput.text = ""
                         listView.positionViewAtEnd()
                     }
                 }
 
+                CustomBtn{
+                    id: btnVoice
+                    anchors.top: inputQuestionInput.top
+                    anchors.bottom: inputQuestionInput.bottom
+                    anchors.right: parent.right
+                    anchors.rightMargin: 15
+                    btnIcon: "../assets/icon _microphone.svg"
 
+                    onClicked: {
+                        // Ação do botão adicional
+                    }
+                }
             }
 
             Rectangle {
@@ -293,13 +333,24 @@ Window {
     }
     Connections{
         target: backend
-        function onLastResponse(message, heigt){
+        function onChatResponse(message, hasScr){
             myListModel.append({
-                                   userPictureSource: "images/pyiaprofilePic.png",
-                                   messageString: message,
-                                   isUserMessage: false,
-                                   heigt_box: height
-                               })
+                userPictureSource: "images/pyiaprofilePic.png",
+                messageString: message,
+                isUserMessage: false,
+                hasScript: hasScr
+                                   
+            })
+            listView.positionViewAtEnd()
+         }
+        function onUserResponse(message){
+            myListModel.append({
+                userPictureSource: "images/dummyProfile.png",
+                messageString: message,
+                isUserMessage: true,
+                hasScript: false
+                
+            })
             listView.positionViewAtEnd()
          }
     }
