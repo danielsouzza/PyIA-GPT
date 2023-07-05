@@ -1,8 +1,7 @@
-import platform
 import openai
 from ChatVoz import ChatVoz
 from CodeController import CodeController
-from Callback import Callback
+import distro
 import re
 
 
@@ -16,21 +15,31 @@ class ChatController:
         self.callback = callback
         
     def update_messages(self, content):
-        self.message_history.append({"role": "user", "content": content})
+        self.message_history.append({"role": "user", "content": self.tamplateQuestion(content)})
         
     def set_header(self):
-        message_init = f"""Assistente Virtual {self.system} - Superusuário
+        message_init = f"""Assistente Virtual Especialista em linuxmint - Superusuário
 
-Assistente: Olá! Sou uma assistente virtual especializada em Linux. Como posso ajudar?
+Assistente: Olá! Sou uma assistente virtual especializada em {self.system} e estou aqui para ajudar. Por favor, faça suas perguntas ou me forneça mais detalhes sobre o que você precisa saber ou fazer no sistema operacional Linux. Irei responder apenas perguntas relacionada a minha especialidade. Como posso ajudar?
 
-Usuário:"""
+Usuário: Olá"""
         self.update_messages(message_init)
 
+    def tamplateQuestion(self, content):
+        return f"""Assistente Virtual Especialista em linuxmint - Superusuário
+
+Role 1: Irei responder apenas perguntas relacionada a minha especialidade. 
+Role 2: respostas curtas
+Role 3: comandos entre (`)
+
+Usuário: {content}"""
+
     def verify_system(self):
-        return platform.system()
+        distro_info = distro.info()
+        return distro_info["id"]
     
     def extract_commands(self, content):
-        pattern = re.compile(r'(?:[`]{1,3}(?:\s+)?)(.*?)(?:(?:\s+)?[`]{1,3})')
+        pattern = re.compile(r'(?:[`]{1,3}(?:bash)?(?:\s+)?)(.*?)(?:(?:\s+)?[`]{1,3})',re.S)
         scripts = pattern.findall(content)
         self.code_controller.set_corrent_code(scripts)
         

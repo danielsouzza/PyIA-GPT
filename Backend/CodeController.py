@@ -18,7 +18,7 @@ class CodeController:
             code = f'echo "{self.password}" | sudo -S {code.replace("sudo","",1)} -y'
         
         result = subprocess.run(code, shell=True, capture_output=True, text=True)
-        
+        print(result.stdout)
         return result
     
     def exec_justOneCode(self):

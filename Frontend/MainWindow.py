@@ -21,8 +21,8 @@ class Chat(Callback):
         
 
     def on_result(self, message, hasScripts):
-        message = message.replace("```", "")
         print(message)
+        message = message.replace("```", "")
         print(self.controller.code_controller.corrent_codes)
         self.view.onChatResponse(message, hasScripts)
         if self.voiceMod:
@@ -42,9 +42,6 @@ class Chat(Callback):
                 print(result.stdout)
                 if result and result.stderr == "":
                     self.controller.chat_voz.play_audio("Pronto")
-                    
-
-                
                 break
             elif time > 2 or "não" in response:
                 break
@@ -57,10 +54,11 @@ class Chat(Callback):
         while True:
             activation = self.controller.chat_voz.recognizer_voz().lower()
             print(activation)
-            if activation != "" and self.nameChat in activation:
+            if activation != "" and self.nameChat in activation or self.voiceMod:
                 self.voiceMod = True
                 self.controller.chat_voz.play_audio("Olá, estou ouvindo")
                 self.run_chat_voz()
+            
             
 
     def run_chat_voz(self):
@@ -75,7 +73,7 @@ class Chat(Callback):
             else:
                 if "dispensar" in comand:
                     self.controller.chat_voz.play_audio("Ok, até logo")
-                    self.voiceMod = True
+                    self.voiceMod = False
                     break
                 count = 0
                 self.view.onUserResponse(comand)
@@ -88,6 +86,9 @@ class Chat(Callback):
 
     def run_chat_text(self,message):
         self.controller.send_message(message.lower())
+    
+    def onClickListenCode(self):
+        self.controller.code_controller.exec_justOneCode()
 
 
 
@@ -103,6 +104,7 @@ class MainWindow(QObject):
 
     def onChatResponse(self,content, hasScript):
         print(f"Tem scripts: {hasScript}")
+        content = content.replace("Assistente:", "")
         self.chatResponse.emit(content,hasScript)
     
     def requestChatResponse(self, content):
@@ -121,5 +123,11 @@ class MainWindow(QObject):
        
     @Slot()
     def executar(self):
-        self.Chat.controller.code_controller.exec_justOneCode()
+        threading.Thread(target=self.Chat.onClickListenCode).start()
+        # result = self.Chat.controller.code_controller.exec_justOneCode()
+        # print(result.stdout)
+
+    @Slot()
+    def onModeVoice(self):
+        self.Chat.voiceMod = True
     

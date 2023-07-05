@@ -155,9 +155,9 @@ Window {
                     delegate: Item {
                         width: 650
                         height: if (hasScript){
-                            Math.max(50, messageText.height + 10 + 105)
+                            Math.max(50, messageText.height + 15 + 60)
                         }else{
-                            Math.max(50, messageText.height + 10)
+                            Math.max(50, messageText.height + 15)
                         }
                         anchors.right: isUserMessage ? parent.right : undefined
                         anchors.left: isUserMessage ? undefined : parent.left
@@ -192,19 +192,19 @@ Window {
                                 horizontalAlignment: Text.AlignJustify
                                 wrapMode: Text.WordWrap
                                 text: messageString
-                                anchors.verticalCenter: parent.verticalCenter
+                                // anchors.verticalCenter: parent.verticalCenter
+                                anchors.top: parent.top
                                 anchors.rightMargin: 10
-                                anchors.bottomMargin: 0
                                 anchors.leftMargin: 10
-                                anchors.topMargin: 0
+                                anchors.topMargin: 17.5
                                
                             }
                             RunBtn{
                                 id: btnRun
                                 anchors.topMargin:10
                                 visible: hasScript
-                                anchors.rightMargin: 5
-                                anchors.right: parent.right
+                                anchors.leftMargin: 50
+                                anchors.left: parent.left
                                 anchors.top: messageText.bottom
                         
                                 onClicked: {
@@ -310,7 +310,7 @@ Window {
                     btnIcon: "../assets/icon _microphone.svg"
 
                     onClicked: {
-                        // Ação do botão adicional
+                        backend.onModeVoice()
                     }
                 }
             }
